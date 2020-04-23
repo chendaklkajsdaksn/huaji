@@ -1,0 +1,394 @@
+<template>
+  <div>
+    <Header></Header>
+    <div class="min-1280">
+      <div>
+        <!-- <div v-if="$store.state.shower"> -->
+        <div v-if="shower">
+          <img src="http://sv.huaji.com/certification_20200228143755135.jpg" alt />
+        </div>
+        <div v-else>
+          <img src="http://sv.huaji.com/certification_20200228143759189.jpg" alt />
+        </div>
+      </div>
+    </div>
+    <div class="content middle">
+      <div>
+        <div class="search">
+          <span class="iconfont icon-weizhi"></span>
+          <span id="cities" v-text="city" @click="show"></span>
+          <label for="cities" class="iconfont icon-icon-test" @click="show"></label>
+          <div class="iconfont icon-sousuo"></div>
+          <input type="text" placeholder="(关键词选填) 花店名/位置" />
+        </div>
+        <div class="cities" v-show="cit">
+          <div>
+            <span @click="pro_select('province')" :class="colorChange1">省份</span>
+            <span @click="pro_select('city')" :class="colorChange2">城市</span>
+            <span @click="pro_select('village')" :class="colorChange3">县区</span>
+          </div>
+          <div v-if="city_select=='province'">
+            <span
+              v-for="(e,i) of provinces"
+              v-text="e.province"
+              :key="i"
+              @click="proSelected(e.province,$event)"
+            ></span>
+          </div>
+          <div v-else-if="city_select=='city'">
+            <span v-for="(e,i) of provinces" :key="i" v-if="e.province==provinceS" id="city_bg">
+              <span
+                v-for="(elem,index) of e.city"
+                :key="index"
+                v-text="index"
+                v-if="isNaN(index)"
+                @click="citSelected(index)"
+              ></span>
+              <span v-else @click="city_novillage(elem)">{{elem}}</span>
+            </span>
+          </div>
+          <div v-else>
+            <span v-for="(e,i) of provinces" :key="i" v-if="e.province==provinceS" id="bg_village">
+              <span v-for="(elem,index) of e.city" :key="index" v-if="isNaN(index)">
+                <span
+                  v-for="(el,ind) of elem"
+                  v-if="index==cityS"
+                  :key="ind"
+                  @click="village_selected(el)"
+                >{{el}}</span>
+              </span>
+            </span>
+          </div>
+        </div>
+        <div>
+          <Storefront></Storefront>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</template>
+<script>
+import Header from "../components/header";
+import Storefront from "../assets/Storefront/Storefront";
+export default {
+  components: {
+    Header
+  },
+  components: {
+    Storefront
+  },
+  data() {
+    return {
+      shower: true,
+      city: "请选择 省/市/区",
+      cit: false,
+      provinces: [
+        {
+          province: "北京",
+          city: ["朝阳区", "东城区", "西城区", "海淀区", "房山区"]
+        },
+        {
+          province: "四川",
+          city: {
+            成都市: ["锦江区", "双流区", "武侯区", "郫县区", "龙泉驿区"],
+            自贡市: [
+              "自流井区",
+              "贡井区",
+              "大安区",
+              "沿滩区",
+              "荣县",
+              "富顺县"
+            ],
+            遂宁市: ["船山区", "安居区", "蓬溪县", "射洪县", "大英县"],
+            内江市: ["市中区", "东新区", "威远县", "隆昌县", "资中县"],
+            德阳市: ["中江县", "绵竹县", "广汉市", "罗江县"],
+            绵阳市: ["平武县", "游仙区", "安县", "三台县", "北川羌族自治县"]
+          }
+        },
+        {
+          province: "吉林",
+          city: {
+            长春市: ["南关区", "宽城区", "二道区", "双阳区"],
+            吉林市: ["船营区", "永吉县", "磐石市"],
+            四平市: ["铁西区", "铁东区", "伊通满族自治区"]
+          }
+        }
+      ],
+      city_select: "province",
+      provinceS: "",
+      cityS: "",
+      villageS: "",
+      colorChange1: {
+        color_blue: false
+      },
+      colorChange2: {
+        color_blue: false
+      },
+      colorChange3: {
+        color_blue: false
+      }
+    };
+  },
+  methods: {
+    timer() {
+      setInterval(() => {
+        if (this.shower) {
+          this.shower = false;
+        } else {
+          this.shower = true;
+        }
+      }, 5000);
+    },
+    show() {
+      if (this.cit) {
+        this.cit = false;
+      } else {
+        this.cit = true;
+      }
+    },
+    //设置 的城市/市/区的可选项
+    pro_select(value) {
+      this.city_select = value;
+      if (value == "province") {
+        this.colorChange1.color_blue = true;
+        this.colorChange2.color_blue = false;
+        this.colorChange3.color_blue = false;
+      } else if (value == "city") {
+        this.colorChange2.color_blue = true;
+        this.colorChange1.color_blue = false;
+        this.colorChange3.color_blue = false;
+      } else {
+        this.colorChange3.color_blue = true;
+        this.colorChange2.color_blue = false;
+        this.colorChange1.color_blue = false;
+      }
+    },
+    //设置选择不同省份时城市的显示函数
+    proSelected(val, e) {
+      this.provinceS = val;
+      this.pro_select("city");
+      this.city_select = "city";
+      e.target.className = "bg_blue";
+      this.city = val;
+    },
+    //设置选择不同市区时区的显示函数
+    citSelected(val) {
+      this.cityS = val;
+      this.city_select = "village";
+      this.pro_select("village");
+      if (this.city.indexOf("/") != -1)
+        this.city = this.city.slice(0, this.city.indexOf("/")); //除去原来选择的市重新进行拼接
+      this.city += " / " + val;
+    },
+    city_novillage(val) {
+      this.cityS = val;
+      if (this.city.indexOf("/") != -1) {
+        this.city = this.city.slice(0, this.city.indexOf("/")); //除去原来选择的市重新进行拼接
+      }
+      this.city += " / " + val;
+      this.cit = false;
+    },
+    village_selected(val) {
+      var arr = this.city.split(" / ");
+      var arr1, arr2;
+      [arr1, arr2] = [arr[0], arr[1]];
+      arr = [].concat(arr1, arr2);
+      this.city = arr.join(" / ");
+      this.city += " / " + val; //去掉原来的区重新拼接
+      this.cit = false;
+    }
+  },
+  watch: {},
+  mounted() {
+    this.$store.commit("fimg");
+    this.timer();
+  }
+};
+</script>
+<style scoped>
+div.min-1280 > div:first-child {
+  width: 100%;
+  min-width: 1280px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+}
+div.min-1280 > div:first-child > div {
+  width: 0;
+  flex: 0 0 100%;
+  height: 80px;
+  margin-top: 70px;
+  background: #f00;
+  text-align: center;
+}
+div.min-1280 > div:first-child > div > img {
+  height: 80px;
+  margin-right: -100%;
+  margin-left: -100%;
+}
+div.middle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+div.middle > div:first-child {
+  flex: 0 0 945px;
+}
+div.search {
+  width: 100%;
+  height: 60px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  box-shadow: 0 2px 3px #aaa;
+  margin: 34px 0;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: left;
+  padding: 0 18px;
+}
+div.search::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+div.search > span {
+  float: left;
+}
+div.search > input {
+  height: 100%;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+  width: 400px;
+  vertical-align: top;
+  border: 0;
+  outline: none;
+  float: left;
+}
+div.search > input::-webkit-input-placeholder {
+  color: #aaa;
+}
+div.search > span:first-child {
+  height: 100%;
+  box-sizing: border-box;
+  font-size: 26px;
+  line-height: 58px;
+}
+span#cities {
+  height: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  line-height: 58px;
+  display: inline-block;
+  vertical-align: top;
+  color: #aaa;
+  margin: 0 20px;
+}
+div.middle > div:nth-child(2) {
+  flex: 0 0 236px;
+}
+div.search > div {
+  height: 100%;
+  color: #11f;
+  line-height: 58px;
+  display: inline-block;
+  vertical-align: top;
+  font-size: 26px;
+  text-align: right;
+  float: right;
+}
+div.search > label {
+  height: 100%;
+  color: #aaa;
+  line-height: 58px;
+  display: inline-block;
+  vertical-align: top;
+  font-size: 26px;
+  float: left;
+}
+div.cities {
+  width: 500px;
+  height: 300px;
+  position: relative;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  display: block;
+  top: -34px;
+  cursor: pointer;
+  box-shadow: 0 3px 3px rgb(177, 174, 174);
+}
+div.cities > div:first-child {
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #aaa;
+  text-align: left;
+}
+div.cities > div > span {
+  margin: 5px 20px;
+}
+.color_blue {
+  color: #5da4fe;
+}
+div.cities > div:nth-child(2) {
+  padding: 10px 15px;
+  text-align: left;
+  line-height: 20px;
+  text-indent: 0;
+}
+div.cities > div:nth-child(2) > span {
+  margin: 0 5px;
+  line-height: 30px;
+  text-indent: 0;
+}
+.bg_blue {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: #5da4fe;
+  color: #fff;
+}
+.bg_white {
+  background: #fff;
+  color: #2c3e50;
+  margin: 0 5px;
+  line-height: 30px;
+  text-indent: 0;
+}
+div.cities > div:nth-child(2) > span > span {
+  margin: 0 5px;
+  line-height: 30px;
+  text-indent: 0;
+}
+div.cities > div:nth-child(2) > span > span > span {
+  margin-right: 10px;
+  line-height: 30px;
+  text-indent: 0;
+}
+
+div.cities > div:nth-child(2) > span > span:first-child {
+  margin: 0 5px;
+  margin-left: 0;
+}
+#city_bg {
+  padding: 0;
+  border-radius: 5px;
+  background: #fff;
+  color: #2c3e50;
+}
+#bg_village {
+  padding: 0;
+  border-radius: 5px;
+  background: #fff;
+  color: #2c3e50;
+}
+#bg_village::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+#bg_village > span {
+  float: left;
+  margin: 0 5px;
+}
+</style>
