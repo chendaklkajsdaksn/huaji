@@ -14,7 +14,8 @@ const routes = [
 	},
 	{
 		path:"/store",
-		component:Store
+		component:Store,
+		props:true
 	},
 	{
 		path: "/reg",

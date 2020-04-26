@@ -1,6 +1,7 @@
 <template>
   <div>
     <Header></Header>
+
     <div class="min-1280">
       <div>
         <!-- <div v-if="$store.state.shower"> -->
@@ -12,14 +13,21 @@
         </div>
       </div>
     </div>
+
     <div class="content middle">
       <div>
         <div class="search">
           <span class="iconfont icon-weizhi"></span>
           <span id="cities" v-text="city" @click="show"></span>
           <label for="cities" class="iconfont icon-icon-test" @click="show"></label>
-          <div class="iconfont icon-sousuo"></div>
-          <input type="text" placeholder="(关键词选填) 花店名/位置" />
+          <div class="iconfont icon-sousuo" @click="sousuo(keywords)"></div>
+          <input
+            type="text"
+            placeholder="(关键词选填) 花店名/位置"
+            v-model="keywords"
+            ref="sousuo"
+            @keydown.enter="sousuo"
+          />
         </div>
         <div class="cities" v-show="cit">
           <div>
@@ -61,25 +69,89 @@
           </div>
         </div>
         <div>
-          <Storefront></Storefront>
+          <Storefront ref="zujian1" :keyword="keywords"></Storefront>
         </div>
       </div>
-      <div></div>
+      <div>
+        <div class="rightSection">
+          <div></div>
+          <button>地图找花店</button>
+          <p>推荐花店</p>
+          <div>
+            <div>
+              <img src="http://sv.huaji.com/shop-header-default.png" alt />
+            </div>
+            <h3>金铭花店</h3>
+            <p>北京市 西城区</p>
+            <div class="float">
+              <p>已接单745笔</p>
+              <p>
+                好评率
+                <span>100%</span>
+              </p>
+            </div>
+          </div>
+          <div>
+            <div>
+              <img src="http://sv.huaji.com/aab1b1ee10e01e39d775ff7c7a0a5a47.jpg" alt />
+            </div>
+            <h3>深圳市诚信思源花店</h3>
+            <p>广东省 深圳市 龙岗区</p>
+            <div class="float">
+              <p>已接单1012笔</p>
+              <p>
+                好评率
+                <span>100%</span>
+              </p>
+            </div>
+          </div>
+          <div>
+            <div>
+              <img src="http://sv.huaji.com/shop_20190209153814176.jpg" alt />
+            </div>
+            <h3>湖州兰兰百花缘鲜花店</h3>
+            <p>浙江省 湖州市 吴兴区</p>
+            <div class="float">
+              <p>已接单6900笔</p>
+              <p>
+                好评率
+                <span>100%</span>
+              </p>
+            </div>
+          </div>
+          <div>
+            <div>
+              <img src="http://sv.huaji.com/shop_20190131170032192.jpg" alt />
+            </div>
+            <h3>长沙兰亭花坊</h3>
+            <p>长沙市 芙蓉区 长沙市内车站路9号</p>
+            <div class="float">
+              <p>已接单3675笔</p>
+              <p>
+                好评率
+                <span>100%</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 <script>
 import Header from "../components/header";
 import Storefront from "../assets/Storefront/Storefront";
+import Footer from "../components/footer";
 export default {
   components: {
-    Header
-  },
-  components: {
-    Storefront
+    Header,
+    Storefront,
+    Footer
   },
   data() {
     return {
+      keywords: "",
       shower: true,
       city: "请选择 省/市/区",
       cit: false,
@@ -131,6 +203,10 @@ export default {
     };
   },
   methods: {
+    sousuo(val) {
+      this.$refs.zujian1.search();
+      console.log("这是父组件的keywors值：" + this.keywords);
+    },
     timer() {
       setInterval(() => {
         if (this.shower) {
@@ -198,6 +274,7 @@ export default {
       this.city += " / " + val; //去掉原来的区重新拼接
       this.cit = false;
     }
+    //查找关键字
   },
   watch: {},
   mounted() {
@@ -222,6 +299,7 @@ div.min-1280 > div:first-child > div {
   margin-top: 70px;
   background: #f00;
   text-align: center;
+  overflow: hidden;
 }
 div.min-1280 > div:first-child > div > img {
   height: 80px;
@@ -232,6 +310,8 @@ div.middle {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0 auto;
+  position: relative;
 }
 div.middle > div:first-child {
   flex: 0 0 945px;
@@ -247,6 +327,7 @@ div.search {
   font-size: 16px;
   text-align: left;
   padding: 0 18px;
+  position: relative;
 }
 div.search::after {
   content: "";
@@ -288,6 +369,7 @@ span#cities {
 }
 div.middle > div:nth-child(2) {
   flex: 0 0 236px;
+  align-self: flex-start;
 }
 div.search > div {
   height: 100%;
@@ -311,13 +393,14 @@ div.search > label {
 div.cities {
   width: 500px;
   height: 300px;
-  position: relative;
   border: 1px solid #aaa;
   border-radius: 3px;
-  display: block;
-  top: -34px;
+  top: 95px;
+  left: 0;
   cursor: pointer;
   box-shadow: 0 3px 3px rgb(177, 174, 174);
+  position: absolute;
+  background-color: #fff;
 }
 div.cities > div:first-child {
   height: 40px;
@@ -390,5 +473,91 @@ div.cities > div:nth-child(2) > span > span:first-child {
 #bg_village > span {
   float: left;
   margin: 0 5px;
+}
+div.rightSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+div.rightSection > div:first-child {
+  width: 100%;
+  height: 236px;
+  margin-top: 34px;
+  overflow: hidden;
+  background: url(https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1587919136475&di=c282718582ec1b889f589e1346144dc1&imgtype=0&src=http%3A%2F%2Fgss0.baidu.com%2F9vo3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2Fd6ca7bcb0a46f21f9fff70e8fe246b600d33ae45.jpg)
+    center center;
+}
+div.rightSection > button {
+  width: 100%;
+  height: 50px;
+  font-size: 18px;
+  line-height: 50px;
+  background: #5da4fe;
+  color: #fff;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 0;
+}
+div.rightSection > p {
+  margin: 20px 0;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+div.rightSection > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
+  height: 290px;
+  width: 100%;
+  border: 1px solid #eee;
+  box-shadow: 0 0 5px #ddd;
+  margin-bottom: 15px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+div.rightSection > div > div:first-child {
+  width: 113px;
+  height: 113px;
+  border-radius: 50%;
+  overflow: hidden;
+  text-align: center;
+  margin: 36px auto;
+  margin-bottom: 10px;
+}
+div.rightSection > div > div:first-child > img {
+  width: 100%;
+  height: 113px;
+}
+div.rightSection > div h3 {
+  font-weight: 400;
+  color: rgba(77, 77, 77, 1);
+}
+div.rightSection > div > p {
+  font-size: 13px;
+  color: #aaa;
+  margin: 10px 0;
+}
+div.float::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+div.float {
+  width: 100%;
+}
+div.float > p:first-child {
+  float: left;
+  font-size: 12px;
+  color: #aaa;
+}
+div.float > p:last-child {
+  float: right;
+  font-size: 12px;
+  color: #aaa;
+}
+div.float p span {
+  color: #a00;
 }
 </style>
