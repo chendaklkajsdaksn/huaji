@@ -144,7 +144,7 @@
         <div class="iconfont icon-gou" v-if="upwd_test"></div>
         <div class="iconfont icon-cha" v-else v-show="reg_upwd"></div>
       </div>
-      <button>提交注册，即同意以下协议</button>
+      <button @click="register">提交注册，即同意以下协议</button>
       <p @click="show()">《花集网服务协议》</p>
       <div v-show="shower">
         <p>一、 协议内容及签署</p>1.本协议内容包括协议正文及所有花集已经发布的或将来可能发布的各类规则。所有规则为本协议不可分割的组成部分，与协议正文具有同等法律效力。除另行明确声明外，任何花集及其关联公司提供的服务（以下称为花集平台服务）均受本协议约束。
@@ -215,6 +215,26 @@ export default {
     };
   },
   methods: {
+    register() {
+      if (this.phone_test && this.yanzheng && this.upwd_test) {
+        this.axios
+          .post(
+            "/register",
+            "username=" + this.phone + "&password=" + this.upwd
+          )
+          .then(res => {
+            var code = res.data.code;
+            if (code == 0) {
+              alert("对不起，用户已存在");
+            } else {
+              alert("注册成功");
+              this.$router.push("/log");
+            }
+          });
+      } else {
+        alert("验证码输入错误或者手机号密码格式错误");
+      }
+    },
     show() {
       if (this.shower) {
         this.shower = false;

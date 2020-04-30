@@ -3,6 +3,8 @@ import VueRouter from "vue-router"
 import Index from "../views/Index.vue"
 import Login from "../views/log.vue"
 import Store from "../views/store.vue"
+import Order from "../views/order.vue"
+
 
 Vue.use(VueRouter)
 
@@ -29,6 +31,10 @@ const routes = [
 	{
 		path:"/log",
 		component:Login
+	},
+	{
+		path:"/order",
+		component:Order
 	}
 ]
 

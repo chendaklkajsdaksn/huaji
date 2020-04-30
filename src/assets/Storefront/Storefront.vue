@@ -30,10 +30,10 @@
           </p>
         </div>
         <div>
-          <button>下订单</button>
+          <button @click="tiaozhuan(e.name,e.id)">下订单</button>
           <p>18751619877</p>
           <p  @click="copy_num()">点击复制</p>
-          <input type="text" value="18751619877" ref="d" style="display:none"/>
+          <input type="text" value="18751619877" ref="d" style="opacity:0; position:fixed ;top:0"/>
         </div>
       </div>
       <div class="page">
@@ -320,13 +320,16 @@ export default {
     };
   },
   methods: {
+    //把需要跳转的商店名称和id传入地址栏中
+    tiaozhuan(value,id){
+      this.$router.push('/order?name='+value+"&id="+id)
+    },
     copy_num() {
-      
-      console.log(this.$refs.d[0])
       clearTimeout(this.timer);
       this.$refs.copy.className = "hide";
       this.$refs.d[0].select(); // 选择对象
-      document.execCommand("Copy"); // 执行浏览器复制命令
+      let copyText=document.execCommand("Copy"); // 执行浏览器复制命令
+      console.log(this.$refs.d[0])
       this.timer = setTimeout(() => {
         this.$refs.copy.className = "live";
       }, 2000);

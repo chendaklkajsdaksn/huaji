@@ -13,19 +13,20 @@
             <span class="iconfont icon-yonghu">
               <span>|</span>
             </span>
-            <input type="text" placeholder="会员名/手机号" />
+            <input type="text" placeholder="会员名/手机号" v-model="uname" maxlength="11" />
           </div>
           <div>
             <span class="iconfont icon-mima">
               <span>|</span>
             </span>
-            <input type="password" placeholder="密码" />
+            <input type="password" placeholder="密码" v-model="upwd" />
           </div>
-          <div>
+          <div id="yanzhengma">
             <span class="iconfont icon-yanzhengma">
               <span>|</span>
             </span>
-            <input type="password" placeholder="验证码" />
+            <input type="password" placeholder="验证码" v-model="yanzheng" />
+            <div @click="yanzhengma_change">{{yanzhengma}}</div>
           </div>
           <label>
             <input type="checkbox" />10天内免登录
@@ -44,6 +45,8 @@
 </template>
 <script>
 import Footer from "../components/login/footer.vue";
+import { mapMutations } from "vuex";
+
 export default {
   components: {
     Footer
@@ -51,21 +54,83 @@ export default {
   data() {
     return {
       uname: "",
-      upwd: ""
+      upwd: "",
+      yanzhengma:
+        Math.floor(Math.random() * 10) +
+        "" +
+        Math.floor(Math.random() * 10) +
+        Math.floor(Math.random() * 10) +
+        Math.floor(Math.random() * 10),
+      yanzheng: ""
     };
   },
   methods: {
+    ...mapMutations(["logined"]),
     change() {
       this.$router.push("/");
     },
     login() {
       if (!this.uname) {
+        alert("请输入账号或手机号");
+      } else if (!this.upwd) {
+        alert("请输入密码");
+      } else if (this.yanzhengma != this.yanzheng) {
+        alert("验证码输入错误");
+      } else {
+        this.axios
+          .post("/login", "username=" + this.uname + "&password=" + this.upwd)
+          .then(res => {
+            var code = res.data.code;
+            if (code == 0) {
+              alert("手机号或密码输入错误，请重新输入");
+            } else {
+              this.logined({
+                id: res.data.id,
+                username: res.data.username,
+                password: res.data.password
+              });
+              //将服务器返回id,username等相关信息存储到webstorage中
+              sessionStorage.setItem("id", res.data.id);
+              sessionStorage.setItem("username", res.data.username);
+              sessionStorage.setItem("isLogined", true);
+              if (this.$route.query.path) {
+                this.$router.push(this.$route.query.path);
+              } else {
+                this.$router.push("/");
+              }
+            }
+          });
       }
+    },
+    yanzhengma_change() {
+      this.yanzhengma =
+        Math.floor(Math.random() * 10) +
+        "" +
+        Math.floor(Math.random() * 10) +
+        Math.floor(Math.random() * 10) +
+        Math.floor(Math.random() * 10);
     }
   }
 };
 </script>
 <style scoped>
+#yanzhengma {
+  position: relative;
+}
+#yanzhengma > div:last-child {
+  width: 80px;
+  height: 32px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  background-color: #0af;
+  color: #fff;
+  line-height: 32px;
+  text-align: center;
+  letter-spacing: 4px;
+  font-size: 20px;
+  padding-left: 4px;
+}
 .log_head {
   width: 1280px;
   height: 84px;

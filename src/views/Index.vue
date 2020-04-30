@@ -10,7 +10,7 @@
                 <a href="#">首页</a>
               </li>
               <li class>
-                <a href>下订单</a>
+                <router-link to="/store">下订单</router-link>
               </li>
               <li class>
                 <a href>接订单</a>
@@ -32,12 +32,13 @@
                 <img src="https://www.huaji.com/assets/images/home-index/work.png" />
                 <a href>工作台</a>
               </li>
-              <li class>
+              <li class v-if="!$store.state.isLogined">
                 <router-link to="/log">登录</router-link>
               </li>
-              <li class>
+              <li class v-if="!$store.state.isLogined">
                 <router-link to="/reg">注册</router-link>
               </li>
+              <li v-else>会员账号：{{$store.state.username}}</li>
             </ul>
           </div>
         </div>
@@ -45,7 +46,7 @@
           <p>花卉行业垂直服务商，助推行业发展，提升行业效率</p>
           <p>鲜花全产业链服务，为您的订单保驾护航</p>
           <div class="text-center w-100">
-            <a href="#">下订单</a>
+            <router-link to="/store">下订单</router-link>
             <a href="#">接订单</a>
           </div>
         </div>

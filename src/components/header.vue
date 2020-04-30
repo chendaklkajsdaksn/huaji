@@ -94,11 +94,12 @@
                 </li>
               </ul>
             </div>
-            <div>
+            <div v-if="!$store.state.isLogined">
               <router-link to="log">登录</router-link>
               <span>|</span>
               <router-link to="reg">注册</router-link>
             </div>
+            <div v-else>会员账号：{{$store.state.username}}</div>
           </div>
         </div>
       </div>
